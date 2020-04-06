@@ -10,9 +10,7 @@ const getById = async (boardId, taskId) => {
   const task = tasks.find(item => {
     return item.boardId === boardId && item.id === taskId;
   });
-  console.log(tasks);
-  console.log(taskId);
-  console.log(task);
+
   if (typeof task === 'undefined') {
     return false;
   }
