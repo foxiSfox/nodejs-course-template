@@ -22,16 +22,13 @@ const getById = async id => {
   }, id);
 };
 
-const create = async (title, columns) => {
-  const id = boards.length + 1;
-
-  const updateColumns = columns.map((item, index) => {
+const create = async board => {
+  board.columns = board.columns.map((item, index) => {
     item.id = (index + 1).toString();
     return item;
   });
-
-  boards.push({ id, title, columns: updateColumns });
-  return { id: id.toString(), title, columns: updateColumns };
+  boards.push(board);
+  return board;
 };
 
 const update = async (id, data) => {

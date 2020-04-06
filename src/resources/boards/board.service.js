@@ -5,15 +5,16 @@ const getAll = () => boardsRepo.getAll();
 
 const getById = id => boardsRepo.getById(id);
 
-const create = (title, columns) => boardsRepo.create(title, columns);
+const create = board => boardsRepo.create(board);
 
 const update = (id, data) => boardsRepo.update(id, data);
-const del = id => {
-  taskService.getBoardTasks(id).then(tasks => {
-    tasks.forEach(item => taskService.del(id, item.id));
-    boardsRepo.del(id);
-  });
+const del = async id => {
+  const tasks = await taskService.getAll(id);
+  for (const task of tasks) {
+    await taskService.del(id, task.id);
+  }
 
+  await boardsRepo.del(id);
   return true;
 };
 

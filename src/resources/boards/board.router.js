@@ -8,7 +8,7 @@ router.route('/').get(async (req, res) => {
 });
 
 router.route('/:boardId').get(async (req, res) => {
-  const board = await boardService.getById(parseInt(req.params.boardId, 10));
+  const board = await boardService.getById(req.params.boardId, 10);
   if (typeof board === 'undefined') {
     res.status(404);
   }
@@ -16,13 +16,16 @@ router.route('/:boardId').get(async (req, res) => {
 });
 
 router.route('/').post(async (req, res) => {
-  const result = await boardService.create(req.body.title, req.body.columns);
-
+  const board = new Board({
+    title: req.body.title,
+    columns: req.body.columns
+  });
+  const result = await boardService.create(board);
   await res.json(result);
 });
 
 router.route('/:boardId').put(async (req, res) => {
-  const board = await boardService.update(parseInt(req.params.boardId, 10), {
+  const board = await boardService.update(req.params.boardId, {
     title: req.body.title,
     columns: req.body.columns
   });
@@ -31,7 +34,7 @@ router.route('/:boardId').put(async (req, res) => {
 });
 
 router.route('/:boardId').delete(async (req, res) => {
-  const result = await boardService.del(parseInt(req.params.boardId, 10));
+  const result = await boardService.del(req.params.boardId);
   return res.json(result);
 });
 
