@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Board = require('./board.model');
 const boardService = require('./board.service');
+const ValidationError = require('./../../Errors/ValidationError');
 
 router.route('/').get(async (req, res) => {
   const boards = await boardService.getAll();
@@ -15,27 +16,52 @@ router.route('/:boardId').get(async (req, res) => {
   return res.json(board);
 });
 
-router.route('/').post(async (req, res) => {
-  const board = new Board({
-    title: req.body.title,
-    columns: req.body.columns
-  });
-  const result = await boardService.create(board);
-  await res.json(result);
+router.route('/').post(async (req, res, next) => {
+  try {
+    if (!req.body.title || !req.body.columns) {
+      throw new ValidationError('Некорректные параметры');
+    }
+
+    const board = new Board({
+      title: req.body.title,
+      columns: req.body.columns
+    });
+    const result = await boardService.create(board);
+    await res.json(result);
+  } catch (err) {
+    next(err);
+    return false;
+  }
 });
 
-router.route('/:boardId').put(async (req, res) => {
-  const board = await boardService.update(req.params.boardId, {
-    title: req.body.title,
-    columns: req.body.columns
-  });
+router.route('/:boardId').put(async (req, res, next) => {
+  try {
+    if (!req.params.boardId) {
+      throw new ValidationError('Некорректные параметры');
+    }
+    const board = await boardService.update(req.params.boardId, {
+      title: req.body.title,
+      columns: req.body.columns
+    });
 
-  return res.json(board);
+    return res.json(board);
+  } catch (err) {
+    next(err);
+    return false;
+  }
 });
 
-router.route('/:boardId').delete(async (req, res) => {
-  const result = await boardService.del(req.params.boardId);
-  return res.json(result);
+router.route('/:boardId').delete(async (req, res, next) => {
+  try {
+    if (!req.params.boardId) {
+      throw new ValidationError('Некорректные параметры');
+    }
+    const result = await boardService.del(req.params.boardId);
+    return res.json(result);
+  } catch (err) {
+    next(err);
+    return false;
+  }
 });
 
 module.exports = router;
