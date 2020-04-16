@@ -16,7 +16,7 @@ router.route('/:userId').get(async (req, res, next) => {
     }
 
     const user = await usersService.getById(req.params.userId);
-    return res.json(user);
+    return res.json(User.toResponse(user));
   } catch (err) {
     next(err);
     return false;
@@ -53,7 +53,7 @@ router.route('/:userId').put(async (req, res, next) => {
       login: req.body.login,
       password: req.body.password
     });
-    return res.json(user);
+    return res.json(User.toResponse(user));
   } catch (err) {
     next(err);
     return false;

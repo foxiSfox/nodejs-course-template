@@ -10,10 +10,10 @@ router.route('/').get(async (req, res) => {
 
 router.route('/:boardId').get(async (req, res) => {
   const board = await boardService.getById(req.params.boardId, 10);
-  if (typeof board === 'undefined') {
+  if (!board) {
     res.status(404);
   }
-  return res.json(board);
+  return res.json(board ? Board.toResponse(board) : false);
 });
 
 router.route('/').post(async (req, res, next) => {
@@ -27,7 +27,7 @@ router.route('/').post(async (req, res, next) => {
       columns: req.body.columns
     });
     const result = await boardService.create(board);
-    await res.json(result);
+    await res.json(Board.toResponse(result));
   } catch (err) {
     next(err);
     return false;
@@ -44,7 +44,7 @@ router.route('/:boardId').put(async (req, res, next) => {
       columns: req.body.columns
     });
 
-    return res.json(board);
+    return res.json(Board.toResponse(board));
   } catch (err) {
     next(err);
     return false;

@@ -1,4 +1,4 @@
-const usersRepo = require('./user.memory.repository');
+const usersRepo = require('./user.memory.repository.js');
 const boardService = require('../boards/board.service');
 const taskService = require('../tasks/task.service');
 
@@ -17,8 +17,7 @@ const del = async id => {
       await taskService.update(board.id, task.id, { userId: null });
     }
   }
-  await usersRepo.del(id);
-  return true;
+  return usersRepo.del(id);
 };
 
 module.exports = { getAll, getById, create, update, del };

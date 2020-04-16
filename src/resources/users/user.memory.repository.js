@@ -1,59 +1,27 @@
-const users = [
-  /* { id: 1, name: 'pavel', login: 'pavel', password: '123456' }, { id: 2, name: 'pavel', login: 'pavel', password: '123456' }, { id: 3, name: 'pavel', login: 'pavel', password: '123456' }*/
-];
+const User = require('./user.model');
 
 const getAll = async () => {
-  return users ? users : [];
+  return User.find({});
 };
 
 const getById = async id => {
-  const user = users.find(item => {
-    return item.id === id;
-  }, id);
-
-  if (typeof user !== 'undefined') {
-    delete user.password;
-  }
-
-  return user;
+  return User.findOne({ _id: id });
 };
 
 const create = async user => {
-  users.push(user);
-  return user;
+  return User.create(user);
 };
 
 const update = async (id, data) => {
-  const userIndex = users.findIndex(item => {
-    return item.id === id;
-  }, id);
-
-  if (userIndex === -1) {
+  const success = (await User.updateOne({ _id: id }, data)).n;
+  if (!success) {
     return;
   }
-
-  // eslint-disable-next-line guard-for-in
-  for (const param in data) {
-    users[userIndex][param] = data[param];
-  }
-
-  return {
-    id: users[userIndex].id.toString(),
-    name: users[userIndex].name,
-    login: users[userIndex].login
-  };
+  return getById(id);
 };
 
 const del = async id => {
-  const userIndex = users.findIndex(item => {
-    return item.id === id;
-  }, id);
-
-  if (userIndex !== -1) {
-    users.splice(userIndex, 1);
-  }
-
-  return true;
+  return (await User.deleteOne({ _id: id })).deletedCount;
 };
 
 module.exports = { getAll, create, getById, update, del };

@@ -15,7 +15,7 @@ router.route('/:boardId/tasks/:taskId').get(async (req, res) => {
     res.status(404);
   }
 
-  return res.json(task);
+  return res.json(task ? Task.toResponse(task) : false);
 });
 
 router.route('/:boardId/tasks').post(async (req, res, next) => {
@@ -34,7 +34,7 @@ router.route('/:boardId/tasks').post(async (req, res, next) => {
     });
 
     const result = await taskService.create(req.params.boardId, task);
-    await res.json(result);
+    await res.json(Task.toResponse(result));
   } catch (err) {
     next(err);
     return false;
@@ -61,7 +61,7 @@ router.route('/:boardId/tasks/:taskId').put(async (req, res, next) => {
       }
     );
 
-    return res.json(task);
+    return res.json(Task.toResponse(task));
   } catch (err) {
     next(err);
     return false;
@@ -70,10 +70,10 @@ router.route('/:boardId/tasks/:taskId').put(async (req, res, next) => {
 
 router.route('/:boardId/tasks/:taskId').delete(async (req, res) => {
   const result = await taskService.del(req.params.boardId, req.params.taskId);
+
   if (!result) {
     res.status(404);
   }
-
   return res.json(result);
 });
 
